@@ -1,0 +1,16 @@
+{
+  "name": "git-package",
+  "version": "0.0.1",
+  "description": "Manage npm package versions in private git repos",
+  "bin": {
+    "git-package": "./bin/git-package"
+  },
+  "main": "src/index.js",
+  "author": "Morantron",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "semver": "^5.5.0",
+    "shelljs": "^0.8.1"
+  }
+}

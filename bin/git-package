@@ -1,0 +1,67 @@
+#!/usr/bin/env node
+
+const path = require('path')
+const shell = require('shelljs')
+const semver = require('semver')
+const fs = require('fs')
+
+const repoPath = process.cwd()
+const pkgPath = path.resolve(repoPath, 'package.json')
+const pkg = require(pkgPath)
+const config = pkg.gitPackage || {}
+
+const [
+  _node,
+  _script,
+  versionComponent = 'minor'
+] = process.argv
+
+const checkBranch = _ => {
+  const currentBranch = shell.exec(`git rev-parse --abbrev-ref HEAD`, { silent: true })
+  const nextVersion = semver.inc(pkg.version, versionComponent)
+
+  if (currentBranch !== 'master') {
+    process.stdout.write(`ERROR git-package: must run from master branch\n`)
+    process.exit(1)
+  }
+}
+
+const build = _ => {
+  if (shell.exec('npm run build').code !== 0) {
+    process.exit(1)
+  }
+}
+
+const bump = _ => {
+  fs.writeFileSync(
+    pkgPath,
+    JSON.stringify(
+      Object.assign(
+        {},
+        pkg,
+        { version: nextVersion }
+      ),
+      null,
+      2
+    )
+  )
+}
+
+const commit = _ => {
+  shell.exec(`git commit -am 'Version ${nextVersion}'`)
+  shell.exec(`git checkout -b release/v${nextVersion}`)
+
+  if (config.includeIgnored) {
+    shell.sed('-i', `^(${config.includeIgnored.join('|')})$`, '', path.resolve(repoPath, '.gitignore'))
+  }
+
+  shell.exec(`git add .`)
+  shell.exec(`git commit -am 'Release commit of version ${nextVersion}'`)
+  shell.exec(`git tag v${nextVersion}`)
+  shell.exec(`git checkout -`)
+}
+
+checkBranch()
+build()
+bump()
+commit()
