@@ -49,7 +49,7 @@ const bump = _ => {
 }
 
 const commit = _ => {
-  shell.exec(`git commit -am 'Version ${nextVersion}'`)
+  shell.exec(`git commit --all --no-verify --message 'Version ${nextVersion}'`)
   shell.exec(`git checkout -b release/v${nextVersion}`)
 
   if (config.includeIgnored) {
@@ -57,7 +57,7 @@ const commit = _ => {
   }
 
   shell.exec(`git add .`)
-  shell.exec(`git commit -am 'Release commit of version ${nextVersion}'`)
+  shell.exec(`git commit --all --no-verify --message 'Release commit of version ${nextVersion}'`)
   shell.exec(`git tag v${nextVersion}`)
   shell.exec(`git push --set-upstream origin release/v${nextVersion}`)
   shell.exec(`git checkout -`)
