@@ -18,12 +18,13 @@ const [
 ] = process.argv
 const nextVersion = semver.inc(pkg.version, versionComponent)
 const isPrerelease = /^pre/.test(versionComponent)
+const releaseBranch = config.branch || 'master'
 
 const checkBranch = _ => {
   const currentBranch = shell.exec(`git rev-parse --abbrev-ref HEAD`, { silent: true }).chomp()
 
-  if (!isPrerelease && currentBranch !== 'master') {
-    process.stderr.write(`ERROR git-package: must run from master branch, or do a prerelease ( ex: git-package preminor )\n`)
+  if (!isPrerelease && currentBranch !== releaseBranch) {
+    process.stderr.write(`ERROR git-package: must run from ${releaseBranch} branch, or do a prerelease ( ex: git-package preminor )\n`)
     process.exit(1)
   }
 }

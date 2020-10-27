@@ -19,18 +19,20 @@ branches where compiled files are removed from _.gitignore_.
     $ npm install --dev git-package
 
 * Add `git-package` config to your `package.json` file specifying the folder
-  containing compiled code
+  containing compiled code. If you need to make release from specific branch, add it to your config also, by default `git-package` uses `master` branch.
 
     // fancy-private-pkg/package.json
 
     {
       ...
       "gitPackage": {
-        "includeIgnored": [ "lib" ]
+        "includeIgnored": [ "lib" ],
+        "branch": "main" 
       }
     }
 
-* Add your compiled code folder to `.gitignore`, and commit normally in `master` branch.
+
+* Add your compiled code folder to `.gitignore`, and commit normally in your branch.
 
 * Run `git-package`
 
